@@ -71,11 +71,17 @@ class BaseFault:
         return obj.value
 
     def _serialize(self):
+        _saved_default = JSONEncoder().default
         JSONEncoder.default = self._encode_default
+
         data = self.__dict__
         data.update({'classname': self.__class__.__name__})
         LOGGER.debug("Serialize fault object %s to json:\n %s", self.__class__.__name__, str(data))
-        return json.dumps(data)
+        json_data = json.dumps(data)
+
+        JSONEncoder.default = _saved_default
+        
+        return json_data
 
     @classmethod
     def _deserialize(cls, json_repr):
